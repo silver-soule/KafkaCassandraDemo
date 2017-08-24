@@ -1,4 +1,3 @@
-/home/gitika/IdeaProjects/kafkamainassignment/src/main/resources/twitter4j.properties'
 *.class
 *.log
 .idea
@@ -6,4 +5,4 @@
 .idea_modules
 .idea_modules/*
 target
-/home/gitika/IdeaProjects/kafkamainassignment/src/main/resources/twitter4jdummy
+src/main/resources/twitter4jdummy
