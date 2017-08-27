@@ -5,6 +5,6 @@ package edu.knoldus.Models
   */
 
 case class UserToHashTag(
-                          userName: String,
-                          data: String
-                        )
+  userName: String,
+  data: String
+)

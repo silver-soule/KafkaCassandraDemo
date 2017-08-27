@@ -10,12 +10,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Created by Neelaksh on 21/8/17.
   */
 class TweetFetcher(twitterFactory: TwitterFactory) {
-
   private val twitterObj = twitterFactory.getInstance
 
   /**
-    * @param userName the term according to which tweets are fetched
-    * @return list of the latest 20 tweets and name of the person fetched by userName
+    * @param userName screenname from whose profile tweets are feteched
+    * @return an instance of UserTOHashTagList with all the unique hashtags
+    *         and the screename of the user
     */
   def getUniqueHashTags(userName: String): Future[UserToHashTagList] = {
     Future {

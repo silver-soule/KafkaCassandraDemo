@@ -11,7 +11,8 @@ import scala.util.{Failure, Success}
 
 
 class KafkaScalaProducer() {
-  val log = Logger.getLogger(this.getClass.toString)
+  val logger = Logger.getLogger(this.getClass.toString)
+
   def getProps(): Properties = {
     val props = new Properties()
     props.put("bootstrap.servers", "localhost:9092")
@@ -26,7 +27,7 @@ class KafkaScalaProducer() {
     props
   }
 
-  def sendHashTagDataToStream(data: Future[UserToHashTagList], producer: KafkaProducer[Nothing, UserToHashTag],topic:String): Unit = {
+  def sendHashTagDataToStream(data: Future[UserToHashTagList], producer: KafkaProducer[Nothing, UserToHashTag], topic: String): Unit = {
     data.onComplete {
       case Success(userNameToHashTags) =>
         val userName = userNameToHashTags.userName
@@ -35,25 +36,26 @@ class KafkaScalaProducer() {
             val record: ProducerRecord[Nothing, UserToHashTag] = new ProducerRecord(topic, UserToHashTag(userName, hashtag))
             producer.send(record)
         }
-      case Failure(ex) => log.warning(ex.toString)
+      case Failure(ex) => logger.warning(ex.toString)
     }
   }
 }
 
 object KafkaScalaProducer extends App {
+  val SLEEPTIME = 10000
   val log = Logger.getLogger(this.getClass.toString)
-  if(args.length == 1) {
+  if (args.length == 1) {
     val topic = "feed"
     log.info(s"Sending Records in Kafka Topic [$topic]")
     val tweetFetcher = new TweetFetcher(new TwitterFactory())
     val kafkaScalaProducer = new KafkaScalaProducer()
     val producer: KafkaProducer[Nothing, UserToHashTag] = new KafkaProducer[Nothing, UserToHashTag](kafkaScalaProducer.getProps())
     val tweets = tweetFetcher.getUniqueHashTags(args(0).trim)
-    kafkaScalaProducer.sendHashTagDataToStream(tweets, producer,topic)
-    Thread.sleep(10000)
+    kafkaScalaProducer.sendHashTagDataToStream(tweets, producer, topic)
+    Thread.sleep(SLEEPTIME)
     producer.close()
   }
-  else{
+  else {
     log.info(s"please give a valid screen name")
   }
 }

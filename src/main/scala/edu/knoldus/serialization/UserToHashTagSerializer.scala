@@ -18,19 +18,20 @@ class UserToHashTagSerializer extends Serializer[UserToHashTag] {
 
   def serialize(arg0: String, arg1: UserToHashTag): Array[Byte] = {
     val logger = Logger.getLogger("def")
-    var retVal: Array[Byte] = null
     val objectMapper = new ObjectMapper with ScalaObjectMapper
     objectMapper.registerModule(DefaultScalaModule)
     try {
-      retVal = objectMapper.writeValueAsString(arg1).getBytes
+      val retVal = objectMapper.writeValueAsString(arg1).getBytes
       logger.info(s"$retVal")
+      retVal
     }
     catch {
       case e: Exception =>
         e.printStackTrace()
+        new Array[Byte](0)
     }
-    retVal
   }
+
   def close(): Unit = {
   }
 }
