@@ -9,7 +9,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
-
 class KafkaScalaProducer() {
   val logger = Logger.getLogger(this.getClass.toString)
 
@@ -49,7 +48,8 @@ object KafkaScalaProducer extends App {
     log.info(s"Sending Records in Kafka Topic [$topic]")
     val tweetFetcher = new TweetFetcher(new TwitterFactory())
     val kafkaScalaProducer = new KafkaScalaProducer()
-    val producer: KafkaProducer[Nothing, UserToHashTag] = new KafkaProducer[Nothing, UserToHashTag](kafkaScalaProducer.getProps())
+    val props = kafkaScalaProducer.getProps()
+    val producer: KafkaProducer[Nothing, UserToHashTag] = new KafkaProducer[Nothing, UserToHashTag](props)
     val tweets = tweetFetcher.getUniqueHashTags(args(0).trim)
     kafkaScalaProducer.sendHashTagDataToStream(tweets, producer, topic)
     Thread.sleep(SLEEPTIME)
