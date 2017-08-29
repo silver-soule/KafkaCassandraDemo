@@ -21,6 +21,7 @@ class KafkaScalaConsumer(cassandraProvider: CassandraProvider, runtime:Long,poll
     props.put("auto.commit.interval.ms", "1000")
     props.put("auto.offset.reset", "earliest")
     props.put("session.timeout.ms", "30000")
+    props.put("-consumer-timeout-ms","30000")
     props
   }
 
@@ -31,7 +32,6 @@ class KafkaScalaConsumer(cassandraProvider: CassandraProvider, runtime:Long,poll
   }
 
   def storeHashTags(topic: String): Unit = {
-    val startTime = System.currentTimeMillis()
     val consumer = generateConsumer(topic, this.props())
     val cassandraConn = cassandraProvider.cassandraConn
     val deadline = runtime.seconds.fromNow
@@ -56,7 +56,8 @@ class KafkaScalaConsumer(cassandraProvider: CassandraProvider, runtime:Long,poll
 
 object KafkaScalaConsumer extends App with CassandraProvider {
   val topic = "feed"
-  val kafkaScalaConsumer = new KafkaScalaConsumer(new {} with CassandraProvider {},30,100)
+  val kafkaScalaConsumer = new KafkaScalaConsumer(new {} with CassandraProvider {},10,100)
   kafkaScalaConsumer.storeHashTags(topic)
   logger.info("bye")
+
 }
