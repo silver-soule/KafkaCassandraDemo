@@ -21,7 +21,7 @@ class UserToHashTagDeserializer extends Deserializer[UserToHashTag] {
   }
 
   def deserialize(arg0: String, arg1: Array[Byte]): UserToHashTag = {
-    val mapper = new ObjectMapper with ScalaObjectMapper
+    val mapper = new ObjectMapper
     mapper.registerModule(DefaultScalaModule)
 
     try {

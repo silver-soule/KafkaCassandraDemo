@@ -5,6 +5,7 @@ import java.util.{Collections, Properties}
 import edu.knoldus.Models.UserToHashTag
 import org.apache.kafka.clients.consumer.{ConsumerRecords, KafkaConsumer}
 import scala.collection.JavaConverters._
+import scala.concurrent.duration._
 
 
 class KafkaScalaConsumer(cassandraProvider: CassandraProvider, runtime:Long,pollTime:Long) {
@@ -33,8 +34,9 @@ class KafkaScalaConsumer(cassandraProvider: CassandraProvider, runtime:Long,poll
     val startTime = System.currentTimeMillis()
     val consumer = generateConsumer(topic, this.props())
     val cassandraConn = cassandraProvider.cassandraConn
+    val deadline = runtime.seconds.fromNow
     try {
-      while ((System.currentTimeMillis() - startTime) < runtime) {
+      while(deadline.hasTimeLeft) {
         val records: ConsumerRecords[Nothing, UserToHashTag] = consumer.poll(pollTime)
         cassandraConn.execute(s"CREATE TABLE IF NOT EXISTS hashtags (name text, hashtag text, PRIMARY KEY((name),hashtag))")
         for (record <- records.asScala) {
@@ -54,6 +56,7 @@ class KafkaScalaConsumer(cassandraProvider: CassandraProvider, runtime:Long,poll
 
 object KafkaScalaConsumer extends App with CassandraProvider {
   val topic = "feed"
-  val kafkaScalaConsumer = new KafkaScalaConsumer(new {} with CassandraProvider {},20000,100)
+  val kafkaScalaConsumer = new KafkaScalaConsumer(new {} with CassandraProvider {},30,100)
   kafkaScalaConsumer.storeHashTags(topic)
+  logger.info("bye")
 }
